@@ -42,6 +42,33 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Error retrieving product", error });
   }
 });
+router.put("/:id", async (req, res) => {
+  try {
+    const { name, price, category, stock, description } = req.body;
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        price,
+        category,
+        stock,
+        description,
+      },
+      { new: true, runValidators: true }
+    );
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: "Error updating product", error });
+  }
+});
 
 
 module.exports = router;
