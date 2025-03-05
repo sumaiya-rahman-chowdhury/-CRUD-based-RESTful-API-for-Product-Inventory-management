@@ -16,18 +16,18 @@ router.get("/", async (req, res) => {
       const order = req.query.order === "desc" ? -1 : 1;
       sort[req.query.sortBy] = order;
     }
+    const totalProducts = await Product.countDocuments(filter);
     const products = await Product.find(filter)
       .sort(sort)
       .skip(skip)
       .limit(limit);
-    const totalProducts = await Product.countDocuments();
     res.status(200).json({
       totalProducts,
       currentPage: page,
       totalPages: Math.ceil(totalProducts / limit),
       products,
       filter,
-      sort
+      sort,
     });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
