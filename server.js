@@ -3,6 +3,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const productsRoutes = require("./route/product");
+const registerRouter = require("./route/register");
+const loginRouter = require("./route/login");
 const { default: mongoose } = require("mongoose");
 const app = express();
 app.use(cors());
@@ -18,6 +20,8 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use("/api/products", productsRoutes);
+app.use("/api/register", registerRouter);
+app.use("/api/login", loginRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
