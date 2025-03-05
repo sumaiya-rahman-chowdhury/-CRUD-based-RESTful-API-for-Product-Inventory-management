@@ -4,8 +4,17 @@ const Product = require("../models/Product");
 
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const products = await Product.find().skip(skip).limit(limit);
+    const totalProducts = await Product.countDocuments();
+    res.status(200).json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      products,
+    });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
