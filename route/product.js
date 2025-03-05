@@ -63,12 +63,22 @@ router.put("/:id", async (req, res) => {
       message: "Product updated successfully",
       product: updatedProduct,
     });
-  } 
-  
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ message: "Error updating product", error });
   }
 });
-
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    await Product.findByIdAndDelete(id);
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting product", error });
+  }
+});
 
 module.exports = router;
