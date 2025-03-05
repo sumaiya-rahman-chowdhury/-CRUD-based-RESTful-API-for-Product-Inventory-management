@@ -7,13 +7,27 @@ router.get("/", async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    const products = await Product.find().skip(skip).limit(limit);
+    let filter = {};
+    if (req.query.category) {
+      filter.category = req.query.category;
+    }
+    let sort = {};
+    if (req.query.sortBy) {
+      const order = req.query.order === "desc" ? -1 : 1;
+      sort[req.query.sortBy] = order;
+    }
+    const products = await Product.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
     const totalProducts = await Product.countDocuments();
     res.status(200).json({
       totalProducts,
       currentPage: page,
       totalPages: Math.ceil(totalProducts / limit),
       products,
+      filter,
+      sort
     });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
