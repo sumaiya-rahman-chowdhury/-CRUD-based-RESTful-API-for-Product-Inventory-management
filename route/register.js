@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
@@ -18,7 +19,10 @@ router.post("/", async (req, res) => {
         password: hashedPassword,
       });
       await newUser.save();
-      res.status(201).json({ message: "User registered successfully" });
+      const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      res.status(201).json({ message: "User registered successfully", token });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });

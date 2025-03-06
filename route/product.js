@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
+const authMiddleware = require("../middleware/auth")
 
 router.get("/", async (req, res) => {
   try {
@@ -33,7 +34,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-router.post("/add-product", async (req, res) => {
+router.post("/add-product",authMiddleware, async (req, res) => {
   try {
     const { name, price, category, stock, description } = req.body;
     if (!name || !price || !category || !stock) {
@@ -65,7 +66,7 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Error retrieving product", error });
   }
 });
-router.put("/:id", async (req, res) => {
+router.put("/:id",authMiddleware, async (req, res) => {
   try {
     const { name, price, category, stock, description } = req.body;
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -90,7 +91,7 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Error updating product", error });
   }
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findById(id);
